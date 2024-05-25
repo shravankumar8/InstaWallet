@@ -5,6 +5,7 @@ const { JWT_SECRET } = require("../config");
 const jwt = require("jsonwebtoken");
 const { User } = require("../db/schemas");
 const { authMiddleware } = require("../middleware/middleware");
+const { Account } = require("../db/bank.schema");
 const userRouter = express.Router();
 userRouter.use(express.json());
 
@@ -16,6 +17,7 @@ const signupBody = zod.object({
 });
 
 userRouter.post("/signup", async (req, res) => {
+    
     const success = signupBody.safeParse(req.body);
     
     if (!success) {
@@ -40,6 +42,11 @@ userRouter.post("/signup", async (req, res) => {
     const userId = newUser._id;
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1d" });
     res.json({ msg: "user created successfully", token: token });
+
+   await Account.create({
+    userId,
+    balance:1+Math.random()*10000
+   })
     console.log(req.body.email, "has Signed Up succesfully");
 });
 const userLoginSchema=zod.object({
@@ -52,12 +59,13 @@ userRouter.post("/signin",async(req,res) => {
         return res.status(411).json({msg:"incorrect inputs"})
     }
     const existingUser=await User.findOne({email:req.body.email})
-    const userId = existingUser._id;
     if(!existingUser) {
-        res.status(401).json({msg:"user not found"})
+       return res.status(401).json({msg:"user not found"})
     }
+    const userId = existingUser._id;
     const token=jwt.sign({userId},JWT_SECRET)
     console.log(existingUser.email,"has logged in successfully")
+    console.log(token)
 res.json({token:token})
 
 })
@@ -88,13 +96,13 @@ userRouter.get("/bulk",authMiddleware,async(req,res)=>{
     const users = await User.find({
       $or: [{
           firstname: {
-            "$regex": filter,
+            "$regex": filter
           }
         },{
           lastname: {
-            " $regex": filter }
-        }
-      ]
+            "$regex": filter
+         }
+        }]
     });
     res.json({
         user:users.map(user => ({
