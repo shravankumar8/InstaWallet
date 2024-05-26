@@ -12,12 +12,10 @@ const Transaction = require("../db/transaction.schema");
 const accountRouter = express.Router();
 accountRouter.use(express.json());
 
-accountRouter.get("/hi", (req, res) => {
-  res.send("hello bayya");
-  console.log("accounts router works ");
-});
+
 
 accountRouter.get("/balance", authMiddleware, async (req, res) => {
+  
   console.log(req.userId);
   const userAccount = await Account.findOne({ userId: req.userId });
   console.log(userAccount.balance);
@@ -39,11 +37,12 @@ accountRouter.post("/transfer", authMiddleware, async (req, res) => {
     if (!toAccount) {
       return res.status(400).json({ msg: "user not found" });
     }
-    await Account.updateOne(
-      { userId: req.userId },
-      { $inc: { balance: -amount } }
-    );
-    await Account.updateOne({ userId: to }, { $inc: { balance: amount } });
+  
+      
+      await Account.updateOne({ userId: req.userId },{ $inc: { balance: -amount } });
+      await Account.updateOne({ userId: to }, { $inc: { balance: amount } });
+      console.log("from id ",req.userId)
+      console.log("to id",to);
 
 
     const newTransaction=await new Transaction({
@@ -56,7 +55,7 @@ accountRouter.post("/transfer", authMiddleware, async (req, res) => {
     newTransaction
       .save()
       .then((savedTransaction) => {
-        console.log("Transaction saved succesfully.", savedTransaction);
+        // console.log("Transaction saved succesfully.", savedTransaction);
         res
           .status(200)
           .json({ msg: "Transfer successful", transaction: savedTransaction });

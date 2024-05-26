@@ -16,7 +16,9 @@ const connectToMongo=()=>{
 mongoose.connect("mongodb://localhost:27017/paytm-clone");
 console.log("connected to MongoDB");
     }catch (e){
+
         console.error("error connection to mongoDb",e);
+        console.error("check is the MongoDB server is running");
     }
 }
 connectToMongo()
