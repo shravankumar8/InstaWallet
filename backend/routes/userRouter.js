@@ -22,16 +22,21 @@ userRouter.post("/signup", async (req, res) => {
     
     if (!success) {
         return res
-        .status(411)
-        .json({ msg: "email is already taken / or incorrect inputs bro" });
+          .status(400)
+          .json({
+            msg: "Invalid input. Please check your details and try again.",
+         
+        });
     }
     const existinguser = await User.findOne({
         email: req.body.email,
     });
     if (existinguser) {
     return res
-      .status(411)
-      .json({ msg: "the email is already taken/incorrect inputs " });
+      .status(409)
+      .json({
+        msg: "Email is already taken or invalid input. Please check your details and try again.",
+      });
     }
     const newUser = await User.create({
         email: req.body.email,
@@ -41,7 +46,7 @@ userRouter.post("/signup", async (req, res) => {
     });
     const userId = newUser._id;
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1d" });
-    res.json({ msg: "user created successfully", token: token });
+    res.status(201).json({ msg: "User created successfully.", token: token });
 
    await Account.create({
     userId,
@@ -56,16 +61,30 @@ const userLoginSchema=zod.object({
 userRouter.post("/signin",async(req,res) => {
     const {success}=userLoginSchema.safeParse(req.body);
     if(!success) {
-        return res.status(411).json({msg:"incorrect inputs"})
+        return res
+          .status(411)
+          .json({
+            msg: "Invalid input. Please check your details and try again.",
+          });
     }
     const existingUser=await User.findOne({email:req.body.email})
-    if(!existingUser) {
-       return res.status(401).json({msg:"user not found"})
-    }
+    if (!existingUser) {
+      return res
+        .status(404)
+        .json({
+          msg: "User not found. Please sign up to create a new account.",
+        });
+    } else if (existingUser.password !== req.body.password) {
+      return res
+        .status(401)
+        .json({ msg: "Incorrect password. Please try again." });
+    } 
+    
+    
     const userId = existingUser._id;
     const token=jwt.sign({userId},JWT_SECRET)
     console.log(existingUser.email,"has logged in successfully")
-    console.log(token)
+    
 res.json({token:token})
 
 })
@@ -80,12 +99,12 @@ userRouter.put("/modify",authMiddleware,async(req,res)=>{
 const {success}=updateBody.safeParse(req.body)
 if(!success){
     res.status(411).json({
-        mag:"error while updating info"
+        msg:"Error while updating information. Please try again."
     })
 }
 
 await User.updateOne({ _id: req.userId },req.body);
-res.json({msg:"info updated successfully"})
+res.json({msg:"Information updated successfully."})
 
 })
 

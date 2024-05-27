@@ -18,7 +18,7 @@ accountRouter.get("/balance", authMiddleware, async (req, res) => {
   
   console.log(req.userId);
   const userAccount = await Account.findOne({ userId: req.userId });
-  console.log(userAccount.balance);
+  console.log(req.userId,"has requested balance enquery",userAccount.balance);
   res.json({
     balance: userAccount.balance,
   });
@@ -29,20 +29,25 @@ accountRouter.post("/transfer", authMiddleware, async (req, res) => {
 
   try {
     const currentAccount = await Account.findOne({ userId: req.userId });
+    if(req.userId === to){
+      return res.status(400).json({ msg: "Cannot transfer to self" });
+    }
     if (currentAccount.balance < amount) {
-      return res.status(400).json({ msg: "insufficient balance" });
+      return res
+        .status(403)
+        .json({ msg: "Insufficient balance to complete the transaction." });
     }
 
     const toAccount = await Account.findOne({ userId: to });
     if (!toAccount) {
-      return res.status(400).json({ msg: "user not found" });
+      return res.status(404).json({ msg: "The requested user was not found." });
     }
   
       
       await Account.updateOne({ userId: req.userId },{ $inc: { balance: -amount } });
       await Account.updateOne({ userId: to }, { $inc: { balance: amount } });
-      console.log("from id ",req.userId)
-      console.log("to id",to);
+      console.log(amount ,"from ",req.userId," to ",to);
+
 
 
     const newTransaction=await new Transaction({
@@ -63,7 +68,7 @@ accountRouter.post("/transfer", authMiddleware, async (req, res) => {
       .catch((error) => {
         console.error("Error saving transaction:", error);
         // Handle the error and send an error response
-        res.status(500).json({ error: "Failed to save transaction" }); // Assuming you are using Express and have access to res (response object)
+        res.status(500).json({ msg: "Failed to save transaction" }); // Assuming you are using Express and have access to res (response object)
       });
 
 
