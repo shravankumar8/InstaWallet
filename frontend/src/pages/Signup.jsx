@@ -7,7 +7,7 @@ import { Button } from "../components/Button";
 import { ButtonWarning } from "../components/ButtonWarning";
 import axios from 'axios'
 function Signup() {
-  const [firstName, setFirstName] =useState("");
+  const [firstname, setFirstName] =useState("");
   const [lastname, setLastName] =useState("");
   const [email, setEmail] =useState("");
   const [password, setPassword] =useState("");
@@ -20,7 +20,7 @@ function Signup() {
           <SubHeading label={"Enter your information to create an account"} />
           <InputBox
             onChange={(e) => {
-              setLastName(e.target.value);
+              setFirstName(e.target.value);
             }}
             placeholder="John"
             label={"First Name"}
@@ -49,16 +49,24 @@ function Signup() {
           <div className="pt-4">
             <Button
               onClick={async () => {
+                console.log(
+                   firstname,
+                    lastname,
+                    email,
+                    password
+
+                )
                 const response = await axios.post(
-                  "http://localhost:3000/api/v1/users/signup",
+                  "http://localhost:3000/api/v1/user/signup",
                   {
-                    firstName: firstName,
-                    lastName: lastname,
+                    firstname: firstname,
+                    lastname: lastname,
                     email: email,
                     password: password,
                   }
                 );
                 localStorage.setItem("token", response.data.token);
+                alert(response.data.msg)
               }}
               label={"Sign Up"}
             />

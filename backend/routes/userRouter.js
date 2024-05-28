@@ -17,7 +17,7 @@ const signupBody = zod.object({
 });
 
 userRouter.post("/signup", async (req, res) => {
-    
+    // console.log(req.body);
     const success = signupBody.safeParse(req.body);
     
     if (!success) {
@@ -33,7 +33,7 @@ userRouter.post("/signup", async (req, res) => {
     });
     if (existinguser) {
     return res
-      .status(409)
+      .status(200)
       .json({
         msg: "Email is already taken or invalid input. Please check your details and try again.",
       });

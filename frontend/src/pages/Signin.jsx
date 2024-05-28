@@ -7,10 +7,8 @@ import { Button } from "../components/Button";
 import { ButtonWarning } from "../components/ButtonWarning";
 import axios from "axios";
 function Signin() {
-  const [firstName, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("kumashravan5@gmail.com");
+  const [password, setPassword] = useState("Cbdadmin@123");
 
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
@@ -23,6 +21,7 @@ function Signin() {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
+            value={email}
             placeholder="johndeo@gmail.com"
             label={"Email"}
           />
@@ -30,6 +29,7 @@ function Signin() {
             onChange={(e) => {
               setPassword(e.target.value);
             }}
+            value={password}
             placeholder="*****"
             label={"password"}
           />
@@ -37,14 +37,13 @@ function Signin() {
             <Button
               onClick={async () => {
                 const response = await axios.post(
-                  "http://localhost:3000/api/v1/users/signin",
+                  "http://localhost:3000/api/v1/user/signin",
                   {
-
-
                     email: email,
                     password: password,
                   }
                 );
+                
                 localStorage.setItem("token", response.data.token);
               }}
               label={"Sign In"}
