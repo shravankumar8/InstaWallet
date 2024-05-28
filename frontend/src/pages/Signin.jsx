@@ -1,37 +1,24 @@
 import React from "react";
 import { useState } from "react";
-import {Heading} from '../components/Heading'
+import { Heading } from "../components/Heading";
 import { SubHeading } from "../components/SubHeading";
 import { InputBox } from "../components/InputBox";
 import { Button } from "../components/Button";
 import { ButtonWarning } from "../components/ButtonWarning";
-import axios from 'axios'
-function Signup() {
-  const [firstName, setFirstName] =useState("");
-  const [lastname, setLastName] =useState("");
-  const [email, setEmail] =useState("");
-  const [password, setPassword] =useState("");
+import axios from "axios";
+function Signin() {
+  const [firstName, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
       <div className="flex flex-col justify-center">
         <div className="rounded-lg bg-white w-80 text-center p-2 h-max px-4">
-          <Heading label={"Sign up"} />
-          <SubHeading label={"Enter your information to create an account"} />
-          <InputBox
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
-            placeholder="John"
-            label={"First Name"}
-          />
-          <InputBox
-            onChange={(e) => {
-              setLastName(e.target.value);
-            }}
-            placeholder="Deo"
-            label={"Last Name"}
-          />
+          <Heading label={"Sign In"} />
+          <SubHeading label={"Welcome back enter you details!!"} />
+          
           <InputBox
             onChange={(e) => {
               setEmail(e.target.value);
@@ -50,23 +37,23 @@ function Signup() {
             <Button
               onClick={async () => {
                 const response = await axios.post(
-                  "http://localhost:3000/api/v1/users/signup",
+                  "http://localhost:3000/api/v1/users/signin",
                   {
-                    firstName: firstName,
-                    lastName: lastname,
+
+
                     email: email,
                     password: password,
                   }
                 );
                 localStorage.setItem("token", response.data.token);
               }}
-              label={"Sign Up"}
+              label={"Sign In"}
             />
           </div>
           <ButtonWarning
-            label={"Already have an account "}
-            to={"/signin"}
-            buttonText={"Sign in"}
+            label={"dont have an account "}
+            to={"/signup"}
+            buttonText={"Sign Up "}
           />
         </div>
       </div>
@@ -74,4 +61,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default Signin;
