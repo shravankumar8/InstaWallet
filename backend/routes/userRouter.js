@@ -113,15 +113,19 @@ res.json({msg:"Information updated successfully."})
 userRouter.get("/bulk",authMiddleware,async(req,res)=>{
     const filter=req.query.filter||"";
     const users = await User.find({
-      $or: [{
+      $or: [
+        {
           firstname: {
-            "$regex": filter
-          }
-        },{
+            $regex: filter,
+          },
+        },
+        {
           lastname: {
-            "$regex": filter
-         }
-        }]
+            $regex: filter,
+          },
+        },
+      ],
+      _id: { $ne: req.userId},
     });
     res.json({
         user:users.map(user => ({
