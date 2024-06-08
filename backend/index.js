@@ -12,7 +12,7 @@ app.use("/api/v1", rootRouter);
 app.use(cors())
 
 
-const connectToMongo=()=>{
+const connectToMongo=()=>{  
     try{
 
 mongoose.connect("mongodb://localhost:27017/paytm-clone");

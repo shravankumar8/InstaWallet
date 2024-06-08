@@ -6,10 +6,11 @@ import { InputBox } from "../components/InputBox";
 import { Button } from "../components/Button";
 import { ButtonWarning } from "../components/ButtonWarning";
 import axios from "axios";
+import { NavLink, useNavigate } from "react-router-dom";
 function Signin() {
   const [email, setEmail] = useState("kumashravan5@gmail.com");
   const [password, setPassword] = useState("Cbdadmin@123");
-
+const navigate=useNavigate()
   return (
     <div className="bg-slate-300 h-screen flex justify-center">
       <div className="flex flex-col justify-center">
@@ -36,15 +37,25 @@ function Signin() {
           <div className="pt-4">
             <Button
               onClick={async () => {
-                const response = await axios.post(
-                  "http://localhost:3000/api/v1/user/signin",
-                  {
-                    email: email,
-                    password: password,
+                try {
+                  
+                  const response = await axios.post(
+                    "http://localhost:3000/api/v1/user/signin",
+                    {
+                      email: email,
+                      password: password,
+                    }
+                  );
+                  
+                  localStorage.setItem("token", response.data.token);
+                  alert(response.data.msg)
+                  console.log(response.data) 
+                  if(response.data.token){
+                    navigate("/dashboard");
                   }
-                );
-                
-                localStorage.setItem("token", response.data.token);
+                } catch (error) {
+                 console.log(error)
+                }
               }}
               label={"Sign In"}
             />

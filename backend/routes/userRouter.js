@@ -22,7 +22,7 @@ userRouter.post("/signup", async (req, res) => {
     
     if (!success) {
         return res
-          .status(400)
+          .status(200)
           .json({
             msg: "Invalid input. Please check your details and try again.",
          
@@ -46,7 +46,7 @@ userRouter.post("/signup", async (req, res) => {
     });
     const userId = newUser._id;
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: "1d" });
-    res.status(201).json({ msg: "User created successfully.", token: token });
+    res.status(200).json({ msg: "User created successfully.", token: token });
 
    await Account.create({
     userId,
@@ -62,7 +62,7 @@ userRouter.post("/signin",async(req,res) => {
     const {success}=userLoginSchema.safeParse(req.body);
     if(!success) {
         return res
-          .status(411)
+          .status(200)
           .json({
             msg: "Invalid input. Please check your details and try again.",
           });
@@ -70,13 +70,13 @@ userRouter.post("/signin",async(req,res) => {
     const existingUser=await User.findOne({email:req.body.email})
     if (!existingUser) {
       return res
-        .status(404)
+        .status(200)
         .json({
           msg: "User not found. Please sign up to create a new account.",
         });
     } else if (existingUser.password !== req.body.password) {
       return res
-        .status(401)
+        .status(200)
         .json({ msg: "Incorrect password. Please try again." });
     } 
     
@@ -85,7 +85,7 @@ userRouter.post("/signin",async(req,res) => {
     const token=jwt.sign({userId},JWT_SECRET)
     console.log(existingUser.email,"has logged in successfully")
     
-res.json({token:token})
+res.json({token:token,msg:"user logged in successfully"})
 
 })
 
@@ -98,7 +98,7 @@ const updateBody=zod.object({
 userRouter.put("/modify",authMiddleware,async(req,res)=>{
 const {success}=updateBody.safeParse(req.body)
 if(!success){
-    res.status(411).json({
+    res.status(200).json({
         msg:"Error while updating information. Please try again."
     })
 }

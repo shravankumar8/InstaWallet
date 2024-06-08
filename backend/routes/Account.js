@@ -24,6 +24,8 @@ accountRouter.get("/balance", authMiddleware, async (req, res) => {
   });
 });
 
+
+
 accountRouter.post("/transfer", authMiddleware, async (req, res) => {
   const { amount, to } = req.body;
 
@@ -79,6 +81,20 @@ accountRouter.post("/transfer", authMiddleware, async (req, res) => {
   }
 
   // perform the transformer
+});
+accountRouter.post("/transactions", authMiddleware, async (req, res) => {
+  try {
+    
+    const transactionId = req.body.transactionId;
+    const transactionBody = await Transaction.findOne({ transaction})
+    
+    // console.log(transactionId);
+      res.json(transactionBody );
+
+  } catch (error) {
+    console.log(error)
+    res.status(200).json({ msg: "Transaction not found" });
+  }
 });
 
 module.exports = accountRouter;
